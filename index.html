@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GrabItNow – Daily Deals</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    header {
+      background: #ff3c3c;
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 3rem;
+    }
+
+    header p {
+      margin: 10px 0 0;
+      font-size: 1.5rem;
+    }
+
+    .search-filter {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .search-filter input,
+    .search-filter select,
+    .search-filter button {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .search-filter button {
+      background: #ff3c3c;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .search-filter button:hover {
+      background-color: #cc2f2f;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .product {
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+    }
+
+    .product img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .product-details {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .buy-btn {
+      background: #ff3c3c;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .buy-btn:hover {
+      background-color: #cc2f2f;
+    }
+
+    .toggle-btn {
+      display: block;
+      margin: 20px auto;
+      background-color: #ff3c3c;
+      color: white;
+      padding: 12px 30px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    .toggle-btn:hover {
+      background-color: #cc2f2f;
+      transform: scale(1.05);
+    }
+
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9em;
+    }
+
+    footer a {
+      color: white;
+      text-decoration: underline;
+      margin-left: 10px;
+    }
+
+    /* Back to Top Button */
+    .go-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 999;
+      background-color: #ff3c3c;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 15px 18px;
+      font-size: 20px;
+      cursor: pointer;
+      display: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s;
+    }
+
+    .go-to-top:hover {
+      background-color: #cc2f2f;
+      transform: scale(1.1);
+    }
+
+    /* Modal */
+    .privacy-policy-modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background: #fff;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80%;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>GrabItNow</h1>
+    <p>🔥 Curated Daily Deals You Can’t Miss</p>
+  </header>
+
+  <div class="search-filter">
+    <input type="text" id="search-input" placeholder="Search for products...">
+    <select id="category-select">
+      <option value="">All Categories</option>
+      <option value="electronics">Electronics</option>
+      <option value="home">Home & Kitchen</option>
+      <option value="fashion">Fashion</option>
+    </select>
+    <button id="search-btn">Search</button>
+  </div>
+
+  <div class="container" id="product-container"></div>
+
+  <button id="show-more-btn" class="toggle-btn">Show More</button>
+  <button id="show-less-btn" class="toggle-btn" style="display:none;">Show Less</button>
+
+  <footer>
+    <p>
+      As an Amazon Associate, we earn from qualifying purchases — at no extra cost to you.
+      <br>
+      <a href="#" id="privacy-policy-link">Privacy Policy</a> |
+      <a href="https://facebook.com/YourPageName" target="_blank" rel="noopener">Follow us on Facebook</a>
+    </p>
+  </footer>
+
+  <!-- Go to Top Button -->
+  <button class="go-to-top" id="goToTopBtn">↑</button>
+
+  <!-- Privacy Policy Modal -->
+  <div id="privacy-policy-modal" class="privacy-policy-modal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <h2>Privacy Policy</h2>
+      <p><strong>1. Information We Collect</strong><br>We do not collect personal information. We use cookies to improve user experience and track affiliate referrals.</p>
+      <p><strong>2. Affiliate Disclosure</strong><br>As an Amazon Associate, we earn from qualifying purchases. We do not see or store any of your personal information from these purchases.</p>
+      <p><strong>3. Third-Party Links</strong><br>We may include links to external websites (like Amazon). We are not responsible for their privacy practices.</p>
+      <p><strong>4. Consent</strong><br>By using this site, you agree to the use of cookies and affiliate links as outlined above.</p>
+      <p><strong>5. Contact Us</strong><br>If you have any questions, contact us via facebook</p>
+    </div>
+  </div>
+
+  <script>
+    const mockProducts = [
+      { id: 1, name: "Awesome Headphones", category: "electronics", description: "Top-notch sound and noise cancellation.", image: "https://via.placeholder.com/250x150?text=Product+1", url: "https://www.amazon.com/dp/YOURID?tag=youraffiliateid" },
+      { id: 2, name: "Smart Light Bulbs", category: "home", description: "Color-changing bulbs controlled by your voice or phone.", image: "https://via.placeholder.com/250x150?text=Product+2", url: "https://www.amazon.com/dp/YOURID?tag=youraffiliateid" },
+      { id: 3, name: "Stylish Watch", category: "fashion", description: "A modern watch that goes with any outfit.", image: "https://via.placeholder.com/250x150?text=Product+3", url: "https://www.amazon.com/dp/YOURID?tag=youraffiliateid" },
+      { id: 4, name: "Bluetooth Speaker", category: "electronics", description: "Portable speaker with crisp sound.", image: "https://via.placeholder.com/250x150?text=Product+4", url: "https://www.amazon.com/dp/YOURID?tag=youraffiliateid" },
+      { id: 5, name: "Coffee Maker", category: "home", description: "Brew your coffee like a barista.", image: "https://via.placeholder.com/250x150?text=Product+5", url: "https://www.amazon.com/dp/YOURID?tag=youraffiliateid" },
+      { id: 6, name: "Designer Sunglasses", category: "fashion", description: "Stylish sunglasses for every occasion.", image: "https://via.placeholder.com/250x150?text=Product+6", url: "https://www.amazon.com/dp/YOURID?tag=youraffiliateid" },
+    ];
+
+    const productContainer = document.getElementById("product-container");
+    const showMoreBtn = document.getElementById("show-more-btn");
+    const showLessBtn = document.getElementById("show-less-btn");
+    const categorySelect = document.getElementById("category-select");
+    const searchInput = document.getElementById("search-input");
+    const privacyPolicyLink = document.getElementById("privacy-policy-link");
+    const privacyModal = document.getElementById("privacy-policy-modal");
+    const closeModal = document.getElementById("closeModal");
+    const goToTopBtn = document.getElementById("goToTopBtn");
+
+    let currentPage = 1;
+    const perPage = 3;
+
+    function filterProducts() {
+      const selectedCategory = categorySelect.value;
+      const searchTerm = searchInput.value.toLowerCase();
+
+      const filteredProducts = mockProducts.filter(product => {
+        const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm) || product.description.toLowerCase().includes(searchTerm);
+        return matchesCategory && matchesSearch;
+      });
+
+      renderProducts(filteredProducts);
+    }
+
+    function renderProducts(filteredProducts) {
+      productContainer.innerHTML = '';
+      const slice = filteredProducts.slice(0, currentPage * perPage);
+      slice.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+          <div class="product-details">
+            <h2>${p.name}</h2>
+            <p>${p.description}</p>
+            <a href="${p.url}" target="_blank" class="buy-btn">Check Price</a>
+          </div>`;
+        productContainer.appendChild(div);
+      });
+
+      showMoreBtn.style.display = currentPage * perPage < filteredProducts.length ? "block" : "none";
+      showLessBtn.style.display = currentPage > 1 ? "block" : "none";
+    }
+
+    categorySelect.addEventListener("change", () => {
+      currentPage = 1;
+      filterProducts();
+    });
+
+    searchInput.addEventListener("input", () => {
+      currentPage = 1;
+      filterProducts();
+    });
+
+    showMoreBtn.onclick = () => {
+      currentPage++;
+      filterProducts();
+    };
+
+    showLessBtn.onclick = () => {
+      currentPage = 1;
+      filterProducts();
+    };
+
+    privacyPolicyLink.addEventListener("click", () => {
+      privacyModal.style.display = "block";
+    });
+
+    closeModal.addEventListener("click", () => {
+      privacyModal.style.display = "none";
+    });
+
+    // Show "Go to Top" button when scrolling
+    window.onscroll = () => {
+      if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        goToTopBtn.style.display = "block";
+      } else {
+        goToTopBtn.style.display = "none";
+      }
+    };
+
+    // Scroll to top when the "Go to Top" button is clicked
+    goToTopBtn.onclick = () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    filterProducts(); // Initial render
+  </script>
+
+  <!-- Google AdSense Script -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-XXXXXX"  <!-- Replace with your client ID -->
+       data-ad-slot="XXXXXX"           <!-- Replace with your ad slot ID -->
+       data-ad-format="auto"></ins>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</body>
+</html>
+
